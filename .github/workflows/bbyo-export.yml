@@ -1,7 +1,7 @@
 name: BBYO Export
 on:
   schedule:
-    - cron: '0 0/1 * * *'  # Every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'  # Every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
   workflow_dispatch:
 jobs:
   export:
@@ -27,7 +27,7 @@ jobs:
         chromedriver --version
     - name: Create service account file
       run: |
-        echo "${{ secrets.SERVICE_ACCOUNT_JSON }}" > service_account.json
+        echo "${{ secrets.SERVICE_ACCOUNT_JSON }}" | base64 -d > service_account.json
         cat service_account.json  # Debug: Print redacted contents
         python -c "import json; json.load(open('service_account.json'))"  # Validate JSON
     - name: Run BBYO export script
@@ -37,7 +37,7 @@ jobs:
         NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
       run: python bbyo_export.py
     - name: Upload downloaded Excel file
-      if: success() || failure()  # Upload even on failure for debugging
+      if: success() || failure()
       uses: actions/upload-artifact@v4
       with:
         name: bbyo-export-file
