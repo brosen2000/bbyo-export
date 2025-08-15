@@ -1,7 +1,7 @@
 name: BBYO Export
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '* */3 * * *'  # Every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
 jobs:
   export:
     runs-on: ubuntu-latest
