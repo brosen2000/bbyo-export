@@ -2,7 +2,7 @@ name: BBYO Export
 on:
   schedule:
     - cron: '0 */1 * * *'  # Every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
-  workflow_dispatch:  # Allows manual triggering
+  workflow_dispatch:
 jobs:
   export:
     runs-on: ubuntu-latest
@@ -17,11 +17,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pandas openpyxl requests google-auth google-api-python-client selenium==4.26.1
-    - name: Install Chrome and ChromeDriver
+    - name: Set up Chrome and ChromeDriver
+      uses: browser-actions/setup-chrome@v1
+      with:
+        chrome-version: '139.0.7258.66'  # Match Chrome version
+    - name: Verify Chrome installation
       run: |
-        sudo apt-get update
-        sudo apt-get install -y chromium-browser
-        sudo apt-get install -y chromium-chromedriver
+        google-chrome --version
+        chromedriver --version
     - name: Create service account file
       run: |
         echo "${{ secrets.SERVICE_ACCOUNT_JSON }}" > service_account.json
