@@ -55,6 +55,20 @@ def get_driver():
         print(f"Directory {DOWNLOAD_DIR} already exists and is writable")
 
     opts = Options()
+    # Try Google Chrome first, fall back to Chromium
+    chrome_paths = ["/usr/bin/google-chrome", "/usr/bin/chromium"]
+    selected_path = None
+    for path in chrome_paths:
+        if os.path.exists(path):
+            selected_path = path
+            break
+    if selected_path:
+        opts.binary_location = selected_path
+        print(f"Using browser binary: {selected_path}")
+    else:
+        print("❌ No Chrome or Chromium binary found at expected paths")
+        raise FileNotFoundError("No Chrome or Chromium binary found")
+
     opts.add_argument("--headless=new")
     opts.add_argument("--no-sandbox")
     opts.add_argument("--disable-gpu")
@@ -220,7 +234,7 @@ def main():
     print("Sheet columns:", df_sheet.columns.tolist())
     print(f"Sheet has {len(df_sheet)} rows")
     print("Export columns:", df_new.columns.tolist())
-
+    
     if df_sheet.empty:
         print("Sheet is empty, will append all rows.")
         new = df_new.copy()
